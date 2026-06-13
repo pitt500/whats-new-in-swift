@@ -1,0 +1,16 @@
+title: What's New in Swift
+description: Practical guides and focused examples for the latest Swift releases.
+url: https://pitt500.github.io
+baseurl: /whats-new-in-swift
+author:
+  name: Pedro Rojas
+  url: https://github.com/pitt500
+repository: pitt500/whats-new-in-swift
+markdown: kramdown
+permalink: pretty
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - LICENSE
+  - vendor
