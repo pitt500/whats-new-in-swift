@@ -1,0 +1,10 @@
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="{{ '/' | relative_url }}">Home</a>
+  <span>/</span>
+  {% if page.section_url %}
+    <a href="{{ page.section_url | relative_url }}">{{ page.section }}</a>
+    <span>/</span>
+  {% endif %}
+  <span aria-current="page">{{ page.title }}</span>
+</nav>
+
