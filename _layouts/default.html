@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101217">
+    <meta name="description" content="{{ page.description | default: site.description }}">
+    <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
+    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="{{ '/' | relative_url }}" aria-label="What's New in Swift home">
+        <span class="swift-mark" aria-hidden="true">S</span>
+        <span>What's New in Swift</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="{{ '/swift-6.4/' | relative_url }}">Swift 6.4</a>
+        <a href="https://github.com/{{ site.repository }}">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      {{ content }}
+    </main>
+
+    <footer class="site-footer">
+      <p>Built as an independent learning resource for the Swift community.</p>
+      <p><a href="https://github.com/{{ site.repository }}">View the source on GitHub</a></p>
+    </footer>
+  </body>
+</html>
+
