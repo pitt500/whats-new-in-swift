@@ -1,164 +1,124 @@
 ---
 layout: default
 title: The @diagnose attribute
-description: Use Swift 6.4's @diagnose attribute to control specific warning groups inside a declaration.
+description: Use Swift 6.4's @diagnose attribute for declaration-level control over compiler warnings.
 section: Swift 6.4
 section_url: /swift-6.4/
 ---
 
 {% include breadcrumbs.html %}
 
-<article class="article" markdown="1">
-<p class="eyebrow">Compiler diagnostics</p>
+<article class="article article-wide" markdown="1">
+<p class="eyebrow">Source-level warning control</p>
 <h1>The <code>@diagnose</code> attribute</h1>
-<p class="page-intro"><code>@diagnose</code> gives you fine-grained control over a diagnostic group within one declaration. It can suppress a warning, keep it as a warning, or promote it to an error without changing the behavior of the rest of your project.</p>
+<p class="page-intro"><code>@diagnose</code> refines compiler warning behavior inside a specific declaration. It lets a focused region of source code be stricter or more permissive than the rest of its module.</p>
 
-<div class="callout">
-  <strong>Use narrow scopes and explain exceptions.</strong> Suppressing a useful warning can hide migration work, so attach a <code>reason:</code> and keep the attributed declaration focused.
-</div>
+<div class="callout"><strong>Think of it as a scoped warning policy.</strong> Choose a diagnostic group, select its behavior, and apply that policy only where it makes sense.</div>
 
-## The problem it solves
-
-Projects often need to use a deprecated API temporarily while a migration is underway. Disabling deprecation warnings for the whole target removes useful feedback everywhere. With `@diagnose`, you can silence only the known use:
-
-```swift
-@available(iOS, deprecated: 18.0)
-@available(macOS, deprecated: 15.0)
-func calculateSomething() -> Int {
-    print("Deprecated!")
-    return 0
-}
-
-@diagnose(
-    DeprecatedDeclaration,
-    as: ignored,
-    reason: "Maintain until end of release"
-)
-func complexOperation() {
-    let value = calculateSomething()
-    print("Complex result is", value)
-}
-```
-
-`calculateSomething()` remains deprecated everywhere else. Only deprecated-declaration warnings produced inside `complexOperation()` are ignored.
-
-## Syntax
-
-```swift
-@diagnose(
-    <DiagnosticGroup>,
-    as: <Behavior>,
-    reason: "<Optional explanation>"
-)
-```
-
-- **Diagnostic group:** A compiler-defined identifier such as `DeprecatedDeclaration`.
-- **Behavior:** Exactly one of `ignored`, `warning`, or `error`.
-- **Reason:** An optional string literal that records why the behavior changed.
-
-## Behaviors
-
-<table class="severity-table">
-  <thead>
-    <tr>
-      <th>Behavior</th>
-      <th>Effect inside the declaration</th>
-      <th>Useful when</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>ignored</code></td>
-      <td>Suppresses warnings in the selected group, including when the project treats warnings as errors.</td>
-      <td>A known issue needs a temporary, documented exception.</td>
-    </tr>
-    <tr>
-      <td><code>warning</code></td>
-      <td>Keeps diagnostics in the selected group as warnings, even when they were promoted to errors elsewhere.</td>
-      <td>A migration should remain visible without blocking the build.</td>
-    </tr>
-    <tr>
-      <td><code>error</code></td>
-      <td>Promotes warnings in the selected group to errors.</td>
-      <td>A sensitive declaration needs stricter enforcement.</td>
-    </tr>
-  </tbody>
-</table>
-
-## More focused examples
-
-### Keep deprecations visible without blocking the build
-
-If the project enables warnings as errors, one migration boundary can continue to emit ordinary warnings:
-
-```swift
-@diagnose(
-    DeprecatedDeclaration,
-    as: warning,
-    reason: "Migration tracked separately"
-)
-func compatibilityLayer() {
-    _ = calculateSomething()
-}
-```
-
-### Audit unsafe APIs in a security-sensitive function
-
-`StrictMemorySafety` warnings are disabled by default. Enable them as errors in code that deserves an especially careful audit:
+## At a glance
 
 ```swift
 @diagnose(
     StrictMemorySafety,
     as: error,
-    reason: "Security-sensitive parsing boundary"
+    reason: "Security-sensitive boundary"
 )
-func parseTrustedHeader(_ pointer: UnsafePointer<UInt8>) {
-    // Uses that trigger StrictMemorySafety diagnostics
-    // must be acknowledged or resolved before this compiles.
+func decodeHeader(_ pointer: UnsafePointer<UInt8>) {
+    // StrictMemorySafety warnings are errors throughout
+    // this declaration's signature and lexical scope.
 }
 ```
 
-### Fix future errors today
+The attribute accepts a compiler-defined diagnostic group identifier and one of three behaviors:
 
-Make warnings that are scheduled to become errors in a future Swift language mode block the build now:
+| Behavior | Effect inside the declaration |
+| --- | --- |
+| `error` | Promotes warnings in the selected group to errors. |
+| `warning` | Emits the selected group as warnings, even when an enclosing or module-wide policy promoted them to errors. |
+| `ignored` | Suppresses warnings in the selected group within the declaration. |
+
+`reason:` is optional and must be a static string literal without interpolation.
+
+## How scope works
+
+The policy covers both the annotated declaration's **signature** and its **lexical scope**. It can be applied to functions, types, extensions, protocols, initializers, subscripts, computed properties, accessors, observers, enum cases, type aliases, associated types, imports, and declarations produced by freestanding declaration macros.
 
 ```swift
-@diagnose(
-    ErrorInFutureSwiftVersion,
-    as: error,
-    reason: "Keep this module ready for the next language mode"
-)
-func forwardLookingCode() {
-    // Future-mode errors are enforced here today.
+@diagnose(StrictMemorySafety, as: warning)
+struct LegacyDecoder {
+    func decode(_ pointer: UnsafePointer<UInt8>) {
+        // StrictMemorySafety diagnostics are warnings here.
+    }
+
+    @diagnose(
+        StrictMemorySafety,
+        as: ignored,
+        reason: "Input is validated by the caller"
+    )
+    func decodeTrusted(_ pointer: UnsafePointer<UInt8>) {
+        // The nested declaration overrides its enclosing policy.
+    }
 }
 ```
 
-## Diagnostic groups
+Nested declarations can refine an enclosing policy. The innermost policy wins. Multiple attributes on the same declaration are order-sensitive, and the lexically last applicable attribute wins.
 
-`DeprecatedDeclaration` is only one diagnostic group. Other useful examples include:
+## Relationship with build settings
 
-- `StrictMemorySafety` for uses of language constructs and APIs that can undermine memory safety.
-- `ErrorInFutureSwiftVersion` for warnings that become errors in a future Swift language mode.
-- `UnnecessaryEffectMarker` for unnecessary effect markers.
-- `UselessAvailabilityCheck` for availability checks that do not affect execution.
+Module-wide flags such as `-warnings-as-errors`, `-Werror <GroupID>`, and `-Wwarning <GroupID>` establish global behavior. `@diagnose` overrides that behavior for its declaration only.
 
-The set of groups evolves with the compiler. Use Swift's [generated diagnostic group index](https://github.com/swiftlang/swift/blob/aacc24895250c4c91a80009069725074350ac3f5/userdocs/diagnostics/diagnostic-groups.md) and [group definitions](https://github.com/swiftlang/swift/blob/aacc24895250c4c91a80009069725074350ac3f5/include/swift/AST/DiagnosticGroups.def) as the canonical references.
+```swift
+// The module uses: -warnings-as-errors
+@diagnose(
+    ErrorInFutureSwiftVersion,
+    as: warning,
+    reason: "Migration is tracked for this compatibility layer"
+)
+func compatibilityLayer() {
+    // Future-version diagnostics remain visible without failing this build.
+}
+```
 
-## Scope and good practice
+Important limits:
 
-- Put `@diagnose` on the smallest declaration that needs different diagnostic behavior.
-- Include a clear `reason:` when ignoring or downgrading a warning.
-- Track temporary suppressions so they can be removed after migration.
-- Prefer fixing the underlying warning when the cost is reasonable.
-- Remember that changing a group's behavior affects all diagnostics in that group inside the declaration.
+- `@diagnose` controls **warning diagnostics only**. It cannot suppress or change compiler errors.
+- `-suppress-warnings` remains module-wide and overrides every `@diagnose` behavior, including `as: error`.
+- The attribute does not affect source compatibility, ABI, or deployment targets.
+- Attached peer declarations are outside the annotated declaration's lexical scope.
 
-## Full example
+## Common strategies
 
-The repository includes a [single Swift source file](https://github.com/{{ site.repository }}/blob/main/examples/DiagnoseExamples.swift) with the deprecation examples from this guide.
+```swift
+// Adopt an opt-in analysis in one sensitive declaration.
+@diagnose(StrictMemorySafety, as: error)
+func securityBoundary() { ... }
+
+// Preserve visibility without blocking a warnings-as-errors build.
+@diagnose(NoUsage, as: warning)
+func generatedCompatibilityCode() { ... }
+
+// Document a narrow, temporary exception.
+@diagnose(
+    PreconcurrencyImport,
+    as: ignored,
+    reason: "Remove after the dependency completes its migration"
+)
+import LegacyNetworking
+```
+
+Use the smallest useful scope, explain temporary exceptions, and remember that selecting a group changes every warning that belongs to that group inside the declaration.
+
+## Documented diagnostic groups
+
+The table covers every Group ID with a corresponding document in Swift's diagnostic documentation at commit [`aacc248`](https://github.com/swiftlang/swift/tree/aacc24895250c4c91a80009069725074350ac3f5/userdocs/diagnostics). Each ID links to its source document.
+
+The snippets demonstrate how to apply each identifier. Whether a snippet produces a diagnostic depends on the code inside the declaration, compiler version, language mode, enabled features, and build settings. `@diagnose` only affects diagnostics emitted as warnings; it cannot modify compiler errors.
+
+{% include diagnostic-groups-table.html %}
 
 ## References
 
-- [Swift compiler test for `@diagnose`](https://github.com/swiftlang/swift/blob/aacc24895250c4c91a80009069725074350ac3f5/test/attr/diagnose.swift)
-- [Swift parser tests for valid behaviors and `reason:`](https://github.com/swiftlang/swift/blob/aacc24895250c4c91a80009069725074350ac3f5/test/Parse/diagnose_attribute.swift)
-- [DeprecatedDeclaration diagnostic group documentation](https://github.com/swiftlang/swift/blob/aacc24895250c4c91a80009069725074350ac3f5/userdocs/diagnostics/deprecated-declaration.md)
+- [SE-0522: Source-Level Control Over Compiler Warnings](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0522-source-warning-control.md)
+- [Swift diagnostic documentation](https://github.com/swiftlang/swift/tree/aacc24895250c4c91a80009069725074350ac3f5/userdocs/diagnostics)
+- [Swift diagnostic group definitions](https://github.com/swiftlang/swift/blob/aacc24895250c4c91a80009069725074350ac3f5/include/swift/AST/DiagnosticGroups.def)
 </article>
