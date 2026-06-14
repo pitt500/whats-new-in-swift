@@ -1,0 +1,10 @@
+<div class="table-scroll">
+<table class="diagnostic-table">
+<thead><tr><th>Group ID</th><th>Description</th><th>Swift usage</th></tr></thead>
+<tbody>
+{% for group in site.data.diagnostic_groups %}
+<tr><td><a href="{{ group.url }}"><code>{{ group.id }}</code></a></td><td>{{ group.description }}</td><td><pre><code>{{ group.example }}</code></pre></td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
