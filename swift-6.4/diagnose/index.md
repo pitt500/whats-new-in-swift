@@ -29,15 +29,23 @@ func decodeHeader(_ pointer: UnsafePointer<UInt8>) {
 }
 ```
 
-The attribute accepts a compiler-defined diagnostic group identifier and one of three behaviors:
+### Parameters
+
+| Parameter | Type | Purpose | Possible values |
+| --- | --- | --- | --- |
+| Diagnostic group ID | Identifier | Selects the warning group whose behavior changes in this declaration. | See [Documented diagnostic groups](#documented-diagnostic-groups). |
+| `as:` | Behavior specifier | Defines how warnings from the selected group are emitted. | `error`, `warning`, or `ignored`. |
+| `reason:` | Optional static string literal | Documents why the warning behavior differs in this declaration. | Any string literal without interpolation. |
+
+### Behavior effects
+
+The value passed to `as:` determines the selected group's behavior throughout the declaration:
 
 | Behavior | Effect inside the declaration |
 | --- | --- |
 | `error` | Promotes warnings in the selected group to errors. |
 | `warning` | Emits the selected group as warnings, even when an enclosing or module-wide policy promoted them to errors. |
 | `ignored` | Suppresses warnings in the selected group within the declaration. |
-
-`reason:` is optional and must be a static string literal without interpolation.
 
 ## How scope works
 
