@@ -94,27 +94,50 @@ Important limits:
 - The attribute does not affect source compatibility, ABI, or deployment targets.
 - Attached peer declarations are outside the annotated declaration's lexical scope.
 
-## Common strategies
+## Use cases
+
+### Allow a temporary deprecated API exception
+
+A project can enforce deprecation warnings as errors globally while allowing one compatibility boundary to keep building. The `reason:` records why the exception exists and when it should be revisited.
 
 ```swift
-// Adopt an opt-in analysis in one sensitive declaration.
-@diagnose(StrictMemorySafety, as: error)
-func securityBoundary() { ... }
-
-// Preserve visibility without blocking a warnings-as-errors build.
-@diagnose(NoUsage, as: warning)
-func generatedCompatibilityCode() { ... }
-
-// Document a narrow, temporary exception.
 @diagnose(
-    PreconcurrencyImport,
-    as: ignored,
-    reason: "Remove after the dependency completes its migration"
+    DeprecatedDeclaration,
+    as: warning,
+    reason: "Maintain compatibility until the next release"
 )
-import LegacyNetworking
+func bridgeToLegacySystem() {
+    oldAPI() // Remains a warning here instead of an error.
+}
 ```
 
-Use the smallest useful scope, explain temporary exceptions, and remember that selecting a group changes every warning that belongs to that group inside the declaration.
+### Prepare a declaration for a future Swift language mode
+
+Promote warnings that will become errors in a future Swift language mode today. This helps teams migrate sensitive or actively maintained code before changing the entire module's language mode.
+
+```swift
+@diagnose(
+    ErrorInFutureSwiftVersion,
+    as: error,
+    reason: "Keep this parser ready for the next Swift language mode"
+)
+func parseConfiguration() {
+    // Future-version errors already fail this declaration's build.
+}
+```
+
+### Keep generated or compatibility code free of unused values
+
+Treat unused values as errors inside declarations where every computed result should be consumed, without imposing that policy throughout the project.
+
+```swift
+@diagnose(NoUsage, as: error)
+func generateBindings() {
+    buildMetadata() // Fails the build if this result is unused.
+}
+```
+
+These are only a few possible policies. Explore all available identifiers in [Documented diagnostic groups](#documented-diagnostic-groups).
 
 ## Documented diagnostic groups
 
