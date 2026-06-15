@@ -44,4 +44,8 @@ struct Garage {
 ```
 
 This is a syntax improvement only. The optional still wraps the complete existential or opaque type; the meaning of the type has not changed.
+
+## Reference
+
+- [What's new in Swift - WWDC26](https://developer.apple.com/videos/play/wwdc2026/262)
 </article>
