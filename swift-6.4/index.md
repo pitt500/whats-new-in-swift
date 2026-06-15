@@ -30,5 +30,10 @@ description: Explore highlighted language and tooling changes introduced with Sw
       <h3>Async calls in <code>defer</code></h3>
       <p>Call asynchronous functions while performing deferred cleanup.</p>
     </a>
+    <a class="card" href="{{ '/swift-6.4/unhandled-task-errors/' | relative_url }}">
+      <span class="number">04 · Concurrency</span>
+      <h3>Warnings for unhandled task errors</h3>
+      <p>Catch errors that could otherwise be silently ignored inside an unstructured task.</p>
+    </a>
   </div>
 </section>
