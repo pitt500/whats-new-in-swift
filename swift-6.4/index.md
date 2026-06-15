@@ -9,7 +9,7 @@ description: Explore highlighted language and tooling changes introduced with Sw
 <section class="hero">
   <p class="eyebrow">Swift 6.4</p>
   <h1>What's new in Swift 6.4</h1>
-  <p>Swift 6.4 introduces more precise ways to shape compiler behavior. Start with fine-grained diagnostic control using the new <code>@diagnose</code> attribute.</p>
+  <p>Explore focused improvements to Swift's language and compiler, with concise explanations and practical examples.</p>
 </section>
 
 <section class="section">
@@ -20,6 +20,10 @@ description: Explore highlighted language and tooling changes introduced with Sw
       <h3><code>@diagnose</code></h3>
       <p>Ignore, enable, or promote specific warning groups inside a declaration.</p>
     </a>
+    <a class="card" href="{{ '/swift-6.4/optional-any-some/' | relative_url }}">
+      <span class="number">02 · Type syntax</span>
+      <h3>Optional <code>any</code> and <code>some</code></h3>
+      <p>Write optional existential and opaque types without extra parentheses.</p>
+    </a>
   </div>
 </section>
-
