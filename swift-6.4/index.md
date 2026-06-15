@@ -25,5 +25,10 @@ description: Explore highlighted language and tooling changes introduced with Sw
       <h3>Optional <code>any</code> and <code>some</code></h3>
       <p>Write optional existential and opaque types without extra parentheses.</p>
     </a>
+    <a class="card" href="{{ '/swift-6.4/async-defer/' | relative_url }}">
+      <span class="number">03 · Concurrency</span>
+      <h3>Async calls in <code>defer</code></h3>
+      <p>Call asynchronous functions while performing deferred cleanup.</p>
+    </a>
   </div>
 </section>
