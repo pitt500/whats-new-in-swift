@@ -35,5 +35,10 @@ description: Explore highlighted language and tooling changes introduced with Sw
       <h3>Warnings for unhandled task errors</h3>
       <p>Catch errors that could otherwise be silently ignored inside an unstructured task.</p>
     </a>
+    <a class="card" href="{{ '/swift-6.4/any-apple-os-availability/' | relative_url }}">
+      <span class="number">05 · Availability</span>
+      <h3><code>anyAppleOS</code> availability</h3>
+      <p>Mark APIs as available across all Apple platforms with one shared OS version.</p>
+    </a>
   </div>
 </section>
