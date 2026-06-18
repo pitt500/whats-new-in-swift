@@ -40,5 +40,10 @@ description: Explore highlighted language and tooling changes introduced with Sw
       <h3><code>anyAppleOS</code> availability</h3>
       <p>Mark APIs as available across all Apple platforms with one shared OS version.</p>
     </a>
+    <a class="card" href="{{ '/swift-6.4/module-selectors/' | relative_url }}">
+      <span class="number">06 · Name lookup</span>
+      <h3>Module selectors</h3>
+      <p>Disambiguate declarations when a module and a type share the same name.</p>
+    </a>
   </div>
 </section>
