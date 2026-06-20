@@ -62,7 +62,7 @@ This model is useful and normally performs well. Standard-library types such as 
 
 ## Measuring the read-modify-write cost
 
-The following benchmark stores 400 million `Int` values—approximately 3.2 GB on a 64-bit platform—and performs 50 small mutations:
+The following benchmark stores 400 million `Int` values (approximately 3.2 GB on a 64-bit platform) and performs 50 small mutations:
 
 ```swift
 @inline(never)
