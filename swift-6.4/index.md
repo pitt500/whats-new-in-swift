@@ -45,5 +45,10 @@ description: Explore highlighted language and tooling changes introduced with Sw
       <h3>Module selectors</h3>
       <p>Disambiguate declarations when a module and a type share the same name.</p>
     </a>
+    <a class="card" href="{{ '/swift-6.4/borrow-mutate-accessors/' | relative_url }}">
+      <span class="number">07 · Ownership</span>
+      <h3><code>borrow</code> and <code>mutate</code></h3>
+      <p>Read and modify stored values in place without unnecessary copies.</p>
+    </a>
   </div>
 </section>
