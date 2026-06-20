@@ -103,7 +103,7 @@ Small mutations: 50
 get / set: 6.80 s
 ```
 
-> This is an illustrative microbenchmark, not a universal prediction. Results depend on the compiler, optimization settings, hardware, memory pressure, and surrounding code.
+> *Note: This is an illustrative microbenchmark, not a universal prediction. Results depend on the compiler, optimization settings, hardware, memory pressure, and surrounding code.*
 
 The 3.2 GB input also requires substantial memory, especially while both benchmark variants and temporary copies are alive.
 
