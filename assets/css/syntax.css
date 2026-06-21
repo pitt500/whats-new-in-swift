@@ -1,0 +1,93 @@
+/* Rouge syntax highlighting, using a dark palette inspired by Xcode. */
+.highlight .c,
+.highlight .c1,
+.highlight .cm,
+.highlight .cs {
+  color: #6a9955;
+  font-style: italic;
+}
+
+.highlight .k,
+.highlight .kc,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr,
+.highlight .kt,
+.highlight .ow {
+  color: #ff7ab2;
+}
+
+.highlight .nc,
+.highlight .ne,
+.highlight .nn,
+.highlight .nt,
+.highlight .bp {
+  color: #6bdfff;
+}
+
+.highlight .nf,
+.highlight .fm {
+  color: #67b7a4;
+}
+
+.highlight .na,
+.highlight .nb,
+.highlight .nv,
+.highlight .vc,
+.highlight .vg,
+.highlight .vi {
+  color: #d0bf69;
+}
+
+.highlight .s,
+.highlight .s1,
+.highlight .s2,
+.highlight .sa,
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .se,
+.highlight .sh,
+.highlight .si,
+.highlight .sr,
+.highlight .ss,
+.highlight .sx {
+  color: #fc6a5d;
+}
+
+.highlight .m,
+.highlight .mb,
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .il,
+.highlight .mo {
+  color: #d0bf69;
+}
+
+.highlight .o,
+.highlight .err {
+  color: #ff7ab2;
+}
+
+.highlight .cp,
+.highlight .cpf {
+  color: #fd8f3f;
+}
+
+.highlight .gd {
+  color: #ff7b72;
+}
+
+.highlight .gi {
+  color: #7ee787;
+}
+
+.highlight .ge {
+  font-style: italic;
+}
+
+.highlight .gs {
+  font-weight: 700;
+}
