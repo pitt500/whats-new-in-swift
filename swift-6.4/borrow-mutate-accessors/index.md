@@ -217,6 +217,73 @@ protocol BorrowingContainer {
 
 They can be used for computed properties and subscripts, and they enable access to noncopyable values that a regular getter could not return by copying.
 
+## Noncopyable values
+
+Borrowing accessors are not only a performance optimization. They can expose a noncopyable value that a regular getter cannot return.
+
+Consider a resource whose ownership must remain unique:
+
+```swift
+struct Resource: ~Copyable {
+    var id: Int
+}
+```
+
+A container storing `Resource` must also be declared `~Copyable`. The following getter does not compile because producing its result would require copying the stored resource:
+
+```swift
+struct InvalidContainer: ~Copyable {
+    private var storage: Resource
+
+    init(resource: consuming Resource) {
+        storage = resource
+    }
+
+    var resource: Resource {
+        get {
+            return storage
+            // Error: A getter would need to copy
+            // the noncopyable stored value.
+        }
+    }
+}
+```
+
+Using `borrow` allows callers to inspect the existing resource without copying or consuming it. Adding `mutate` also allows exclusive in-place modification:
+
+```swift
+struct ResourceContainer: ~Copyable {
+    private var storage: Resource
+
+    init(resource: consuming Resource) {
+        storage = resource
+    }
+
+    var resource: Resource {
+        borrow {
+            return storage
+        }
+
+        mutate {
+            return &storage
+        }
+    }
+}
+```
+
+The initializer uses `consuming` to transfer ownership of the resource into the container. After that, the property lends temporary access while the container remains the owner:
+
+```swift
+var container = ResourceContainer(
+    resource: Resource(id: 42)
+)
+
+print(container.resource.id) // Read through borrow
+container.resource.id = 100  // Modify through mutate
+```
+
+This makes `borrow` and `mutate` an expressivity feature as well as a performance feature: they let APIs provide safe access to values that cannot be copied at all.
+
 ## Stable storage is required
 
 A borrowing accessor can only expose a value whose lifetime Swift can guarantee for the duration of the access.
