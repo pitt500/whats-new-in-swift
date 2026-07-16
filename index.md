@@ -19,6 +19,10 @@ description: Practical guides and focused examples for the latest Swift releases
       <h3>What's New in Swift 6.4</h3>
       <p>Focused control over compiler diagnostics, plus more features as they are documented.</p>
     </a>
+    <a class="card" href="{{ '/swift-5.9/' | relative_url }}">
+      <span class="number">Ownership foundations</span>
+      <h3>What's New in Swift 5.9</h3>
+      <p>Noncopyable types, borrowing, and consuming for modeling one-time values.</p>
+    </a>
   </div>
 </section>
-
