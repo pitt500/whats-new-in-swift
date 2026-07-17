@@ -36,6 +36,8 @@ struct Ticket {
 
 That is usually exactly what you want from Swift value types. But for one-time values, copyability can make the model too permissive.
 
+That missing rule is an ownership rule.
+
 ## What ownership means here
 
 In this context, ownership answers a practical question:
